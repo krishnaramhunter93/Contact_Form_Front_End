@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            background-color: #e0e0e0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+        }
+        h2 {
+            text-align: center;
+            color: #444;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #222;
+        }
+        input, textarea, select {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            display: block;
+        }
+        input[type="radio"] {
+            width: auto;
+            margin-right: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            border: none;
+            background-color: #555;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 25px;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+        .popup, .preview-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .popup button, .preview-box button {
+            margin-top: 10px;
+        }
+	.radio-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Contact Us</h2>
+        <form id="contactForm" onsubmit="return previewForm(event)">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <span class="error" id="nameError"></span>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <span class="error" id="emailError"></span>
+
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" required>
+            <span class="error" id="phoneError"></span>
+
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" required></textarea>
+            <span class="error" id="messageError"></span>
+
+             <label>Preferred Contact Method:</label>
+            <div class="radio-group">
+                <input type="radio" name="contact_method" value="Email" required> Email
+                <input type="radio" name="contact_method" value="Phone" required> Phone
+                <input type="radio" name="contact_method" value="Both" required> Both
+            </div>
+
+            <label for="inquiry">Inquiry Type:</label>
+            <select id="inquiry" name="inquiry" required>
+                <option value="">Select an option</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Support Request">Support Request</option>
+                <option value="Feedback">Feedback</option>
+            </select>
+            
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="previewBox" class="preview-box">
+        <h3>Preview Your Submission</h3>
+        <p><strong>Name:</strong> <span id="previewName"></span></p>
+        <p><strong>Email:</strong> <span id="previewEmail"></span></p>
+        <p><strong>Phone:</strong> <span id="previewPhone"></span></p>
+        <p><strong>Message:</strong> <span id="previewMessage"></span></p>
+        <p><strong>Preferred Contact Method:</strong> <span id="previewContactMethod"></span></p>
+        <p><strong>Inquiry Type:</strong> <span id="previewInquiry"></span></p>
+        <button onclick="submitForm()">Confirm & Submit</button>
+    </div>
+
+    <div id="popup" class="popup">
+        <h3>Form Submitted Successfully!</h3>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        function previewForm(event) {
+            event.preventDefault();
+            let valid = true;
+            document.querySelectorAll('.error').forEach(el => el.textContent = "");
+
+            const name = document.getElementById("name").value;
+            if (name.trim() === "") {
+                document.getElementById("nameError").textContent = "Name is required";
+                valid = false;
+            }
+
+            const email = document.getElementById("email").value;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                document.getElementById("emailError").textContent = "Invalid email format";
+                valid = false;
+            }
+
+            const phone = document.getElementById("phone").value;
+            if (!/^[0-9]{10}$/.test(phone)) {
+                document.getElementById("phoneError").textContent = "Phone number must be 10 digits";
+                valid = false;
+            }
+
+            if (!valid) return false;
+
+            document.getElementById("previewName").textContent = name;
+            document.getElementById("previewEmail").textContent = email;
+            document.getElementById("previewPhone").textContent = phone;
+            document.getElementById("previewMessage").textContent = document.getElementById("message").value;
+            document.getElementById("previewContactMethod").textContent = document.querySelector("input[name='contact_method']:checked").value;
+            document.getElementById("previewInquiry").textContent = document.getElementById("inquiry").value;
+
+            document.getElementById("previewBox").style.display = "block";
+        }
+
+        function submitForm() {
+            document.getElementById("previewBox").style.display = "none";
+            document.getElementById("popup").style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+            document.getElementById("contactForm").reset();
+        }
+    </script>
+</body>
+</html>
